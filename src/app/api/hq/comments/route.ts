@@ -15,5 +15,5 @@ export async function POST(request: Request) {
   }
 
   const comment = await createComment(taskId, content, mentions ?? []);
-  return NextResponse.json(comment, { status: 201 });
+  return NextResponse.json(comment, { status: 201, headers: { "Cache-Control": "no-store" } });
 }

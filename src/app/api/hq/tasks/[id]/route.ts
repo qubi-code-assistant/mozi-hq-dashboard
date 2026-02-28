@@ -9,7 +9,7 @@ export async function GET(
 ) {
   const task = await getTaskById(params.id);
   if (!task) {
-    return NextResponse.json({ error: "Task not found" }, { status: 404 });
+    return NextResponse.json({ error: "Task not found" }, { status: 404, headers: { "Cache-Control": "no-store" } });
   }
-  return NextResponse.json(task);
+  return NextResponse.json(task, { headers: { "Cache-Control": "no-store" } });
 }
