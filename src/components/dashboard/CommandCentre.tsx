@@ -1,4 +1,4 @@
-import { getAllAgents } from "@/lib/db";
+import { neon } from "@neondatabase/serverless";
 import { AGENT_ORDER } from "@/lib/agents";
 import { OfficeScene } from "./OfficeScene";
 import { AgentDesk } from "./AgentDesk";
@@ -6,15 +6,20 @@ import { MaterialIcon } from "@/components/shared/MaterialIcon";
 import type { Agent } from "@/lib/types";
 
 export async function CommandCentre() {
-  const agents = await getAllAgents();
+  const sql = neon(process.env.DATABASE_URL!);
+  // Agent is "working" if they have an active task
+  const agents = (await sql`
+    SELECT a.*,
+      CASE WHEN t.id IS NOT NULL THEN 'working' ELSE 'idle' END as status
+    FROM hq_agents a
+    LEFT JOIN hq_tasks t ON t.assigned_to = a.id
+      AND t.state IN ('in_progress', 'peer_review')
+    ORDER BY a.name
+  `) as Agent[];
 
-  // Only show agents that are actively working
   const workingAgents = agents.filter((a) => a.status === "working");
   const agentMap = new Map(workingAgents.map((a) => [a.id, a]));
-
-  const ordered = AGENT_ORDER.map((meta) => agentMap.get(meta.id)).filter(
-    Boolean
-  ) as Agent[];
+  const ordered = AGENT_ORDER.map((meta) => agentMap.get(meta.id)).filter(Boolean) as Agent[];
 
   return (
     <section className="flex flex-col gap-6">
@@ -44,9 +49,7 @@ export async function CommandCentre() {
             {ordered.map((agent, i) => {
               const col = i % 4;
               const offset = col === 1 || col === 3;
-              return (
-                <AgentDesk key={agent.id} agent={agent} offset={offset} />
-              );
+              return <AgentDesk key={agent.id} agent={agent} offset={offset} />;
             })}
           </div>
         )}
