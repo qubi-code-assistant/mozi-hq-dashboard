@@ -12,7 +12,7 @@ let sql: NeonQueryFunction<false, false> | null = null;
 
 function getDb() {
   if (!sql) {
-    const url = process.env.NEON_DATABASE_URL;
+    const url = process.env.DATABASE_URL || process.env.NEON_DATABASE_URL;
     if (!url) throw new Error("NEON_DATABASE_URL not set");
     sql = neon(url);
   }
@@ -125,4 +125,101 @@ export async function createComment(
     RETURNING *
   `;
   return rows[0] as Comment;
+}
+
+export async function ensureTables(): Promise<void> {
+  const db = getDb();
+  try {
+    await db`
+      CREATE TABLE IF NOT EXISTS hq_agents (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        role TEXT NOT NULL,
+        specialisation TEXT,
+        status TEXT DEFAULT 'idle',
+        last_heartbeat TIMESTAMPTZ,
+        soul_md TEXT,
+        updated_at TIMESTAMPTZ DEFAULT NOW()
+      )
+    `;
+    await db`
+      CREATE TABLE IF NOT EXISTS hq_goals (
+        id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+        title TEXT NOT NULL,
+        description TEXT,
+        assigned_agents TEXT[] DEFAULT '{}',
+        tasks_per_day INTEGER DEFAULT 1,
+        status TEXT DEFAULT 'active',
+        created_at TIMESTAMPTZ DEFAULT NOW()
+      )
+    `;
+    await db`
+      CREATE TABLE IF NOT EXISTS hq_tasks (
+        id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+        goal_id TEXT,
+        title TEXT NOT NULL,
+        description TEXT,
+        assigned_to TEXT,
+        created_by TEXT DEFAULT 'mozi',
+        state TEXT DEFAULT 'backlog',
+        priority TEXT DEFAULT 'should',
+        peer_approvals TEXT[] DEFAULT '{}',
+        result_doc_id TEXT,
+        blocked_reason TEXT,
+        created_at TIMESTAMPTZ DEFAULT NOW(),
+        updated_at TIMESTAMPTZ DEFAULT NOW()
+      )
+    `;
+    await db`
+      CREATE TABLE IF NOT EXISTS hq_comments (
+        id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+        task_id TEXT,
+        author TEXT NOT NULL,
+        content TEXT NOT NULL,
+        mentions TEXT[] DEFAULT '{}',
+        notified BOOLEAN DEFAULT false,
+        created_at TIMESTAMPTZ DEFAULT NOW()
+      )
+    `;
+    await db`
+      CREATE TABLE IF NOT EXISTS hq_documents (
+        id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+        task_id TEXT,
+        author TEXT NOT NULL,
+        title TEXT,
+        content TEXT NOT NULL,
+        version INTEGER DEFAULT 1,
+        created_at TIMESTAMPTZ DEFAULT NOW()
+      )
+    `;
+    await db`
+      CREATE TABLE IF NOT EXISTS hq_activity (
+        id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+        agent TEXT NOT NULL,
+        action TEXT NOT NULL,
+        task_id TEXT,
+        detail TEXT,
+        created_at TIMESTAMPTZ DEFAULT NOW()
+      )
+    `;
+    // Seed agents if empty
+    await db`
+      INSERT INTO hq_agents (id, name, role, specialisation) VALUES
+        ('mozi','Mozi','Orchestrator','Coordination, task management, escalation'),
+        ('woz','Woz','Senior Coder','React Native, Rails, Python, Next.js, Docker'),
+        ('holmes','Holmes','Researcher','Web research, competitor analysis, market data, clinical'),
+        ('napoleon','Napoleon','Strategist','GTM, positioning, campaigns, pricing, partnerships'),
+        ('harvey','Harvey','Legal','GDPR, contracts, compliance, app store policies'),
+        ('shakespeare','Shakespeare','Content Writer','Blog, SEO, email, hooks, landing copy, social'),
+        ('oracle','Oracle','Data Analyst','Metrics, cohort analysis, unit economics, dashboards'),
+        ('gordon','Gordon','Devil''s Advocate','Quality gate, assumption challenging, brutal feedback'),
+        ('alfred','Alfred','Executor','Publishing, automation, deployment, follow-through'),
+        ('gucci','Gucci','Designer','UI/UX briefs, brand consistency, design specs, Stitch prompts'),
+        ('warren','Warren','Finance','Unit economics, P&L, pricing validation, runway, investor financials'),
+        ('jordan','Jordan','Sales','Dentist outreach, cold email, clinic onboarding, pipeline, follow-up')
+      ON CONFLICT (id) DO NOTHING
+    `;
+  } catch (e) {
+    console.error("ensureTables error:", e);
+  }
 }

@@ -3,6 +3,7 @@ import { CommandCentre } from "@/components/dashboard/CommandCentre";
 import { ActiveTicketHero } from "@/components/dashboard/ActiveTicketHero";
 import { ProjectOperations } from "@/components/dashboard/ProjectOperations";
 import { TicketDetailModal } from "@/components/modal/TicketDetailModal";
+import { ensureTables } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
@@ -15,7 +16,8 @@ function LoadingSkeleton() {
   );
 }
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  await ensureTables();
   return (
     <>
       <main className="flex-1 flex flex-col p-8 max-w-[1600px] mx-auto w-full gap-8">
