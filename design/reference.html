@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Mozi HQ: Executive Command Centre</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&amp;family=Nunito:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "exec-dark": "#1e293b", 
+                        "exec-slate": "#334155",
+                        "exec-gray": "#475569",
+                        "exec-light": "#64748b",
+                        "exec-accent": "#3b82f6", 
+                        "exec-highlight": "#60a5fa",
+                        "glass-border": "rgba(255, 255, 255, 0.2)",
+                        "glass-bg": "rgba(255, 255, 255, 0.1)",
+                        "status-green": "#10b981",
+                        "status-yellow": "#f59e0b",
+                        "status-red": "#ef4444",
+                    },
+                    fontFamily: {
+                        "display": ["Fredoka", "sans-serif"],
+                        "body": ["Nunito", "sans-serif"],
+                    },
+                    backgroundImage: {
+                        'grid-pattern': "linear-gradient(to right, #e2e8f0 1px, transparent 1px), linear-gradient(to bottom, #e2e8f0 1px, transparent 1px)",
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)',
+                        'card': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+                        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.15)',
+                        'desk': '0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1)',
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #f1f5f9;
+            background-image: linear-gradient(#e2e8f0 1px, transparent 1px), linear-gradient(90deg, #e2e8f0 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        .executive-card {
+            background: #ffffff;
+            border-radius: 0.75rem;
+            border: 1px solid #cbd5e1;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            transition: all 0.2s ease;
+        }
+        .executive-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            transform: translateY(-1px);
+        }
+        .desk-block {
+            position: relative;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .desk-block:hover {
+            transform: scale(1.05);
+            z-index: 20;
+        }
+        .glass-frame {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .city-view {
+            background: linear-gradient(to bottom, #87CEEB 0%, #E0F6FF 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .city-silhouette {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60%;
+            background-repeat: repeat-x;
+            background-position: bottom;
+            background-size: contain;background-image: 
+                linear-gradient(to top, #94a3b8 0%, #94a3b8 100%), 
+                linear-gradient(to top, #cbd5e1 0%, #cbd5e1 100%),
+                linear-gradient(to top, #64748b 0%, #64748b 100%);
+            mask-image: linear-gradient(to top, black 80%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to top, black 80%, transparent 100%);
+            opacity: 0.7;
+        }.building {
+            position: absolute;
+            bottom: 0;
+            background: #cbd5e1;
+            border-top-left-radius: 4px;
+            border-top-right-radius: 4px;
+        }
+        .building-back {
+            background: #94a3b8;
+            z-index: 1;
+        }
+        .building-front {
+            background: #e2e8f0;
+            z-index: 2;
+            border: 1px solid #cbd5e1;
+        }
+        .window-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(6px, 1fr));
+            gap: 4px;
+            padding: 4px;
+            width: 100%;
+            height: 100%;
+            opacity: 0.6;
+        }
+        .window {
+            background: #f1f5f9;
+            height: 8px;
+            border-radius: 1px;
+        }
+        .kanban-col {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+        }
+        .status-pill {
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 9999px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .avatar-ring {
+            box-shadow: 0 0 0 2px #fff, 0 0 0 4px #e2e8f0;
+        }
+    </style>
+</head>
+<body class="text-slate-600 font-body min-h-screen flex flex-col overflow-x-hidden">
+<div class="flex flex-col h-full grow relative z-10">
+<header class="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap bg-white/95 backdrop-blur-md px-8 py-4 shadow-sm border-b border-slate-200">
+<div class="flex items-center gap-4">
+<div class="size-12 flex items-center justify-center bg-exec-dark rounded-xl text-white shadow-lg">
+<span class="material-symbols-outlined text-3xl" data-icon="apartment">apartment</span>
+</div>
+<div class="flex flex-col">
+<h2 class="text-slate-800 text-2xl font-display font-bold leading-none tracking-tight">Mozi <span class="text-exec-accent">HQ</span></h2>
+<span class="text-xs font-body font-bold text-slate-400 uppercase tracking-wider mt-1">Executive Command Suite</span>
+</div>
+</div>
+<div class="flex flex-1 justify-end gap-6 items-center">
+<nav class="hidden md:flex items-center gap-2">
+<a class="text-slate-500 hover:text-exec-accent hover:bg-slate-50 transition-all text-sm font-bold rounded-lg px-4 py-2" href="#">Dashboard</a>
+<a class="bg-exec-accent/10 text-exec-accent text-sm font-bold rounded-lg px-4 py-2" href="#">Agents</a>
+<a class="text-slate-500 hover:text-exec-accent hover:bg-slate-50 transition-all text-sm font-bold rounded-lg px-4 py-2" href="#">Operations</a>
+<a class="text-slate-500 hover:text-exec-accent hover:bg-slate-50 transition-all text-sm font-bold rounded-lg px-4 py-2" href="#">Analytics</a>
+</nav>
+<div class="h-8 w-px bg-slate-200 mx-2"></div>
+<div class="flex items-center gap-4">
+<button class="group flex items-center gap-2 cursor-pointer justify-center overflow-hidden rounded-full h-10 px-5 bg-slate-100 hover:bg-slate-200 text-slate-600 transition-all text-xs font-bold tracking-wide border border-slate-200">
+<span class="material-symbols-outlined text-[18px]" data-icon="notifications">notifications</span>
+<span>NOTICES</span>
+</button>
+<div class="relative group cursor-pointer">
+<div class="size-12 rounded-full ring-2 ring-slate-200 p-0.5 relative overflow-hidden bg-white shadow-sm">
+<img alt="Director Avatar" class="w-full h-full object-cover rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZPe6wjGqUk-BXaG3TkcAbPXhKv2C_6tVSzPHhHGs4WZ9jAo0urc6WjgVcPByzQ8MR_rkM3CpUnRohBE6OI8MhO0sWTRqROHd7vmd6i9H2eMUY0QM0Tiqzir9jg1kZA0NommnquoTrbW3aEv4cyvV6R1G2Jqtv6WHhhPOiWjJE-VqXI7ZZxn13JnywliNLnWiBre9I2cOqBuwHX9HJ9W9hhJdzxmabyTxz9eV4mMBFcdOz1X0estp619gg6f-VNVteDcUdDFsOZF_v"/>
+</div>
+<div class="absolute bottom-0 right-0 size-3 bg-green-500 rounded-full border-2 border-white"></div>
+</div>
+</div>
+</div>
+</header>
+<main class="flex-1 flex flex-col p-8 max-w-[1600px] mx-auto w-full gap-8">
+<section class="flex flex-col gap-6">
+<div class="flex items-center justify-between pb-2">
+<h2 class="text-slate-700 text-3xl font-display font-bold flex items-center gap-3">
+<div class="p-2 bg-slate-200 rounded-lg text-slate-600">
+<span class="material-symbols-outlined" data-icon="meeting_room">meeting_room</span>
+</div>
+                        Command Centre
+                    </h2>
+<div class="flex items-center gap-3 bg-white px-4 py-2 rounded-full border border-slate-200 shadow-sm">
+<span class="size-2 bg-green-500 rounded-full animate-pulse"></span>
+<span class="text-sm font-bold text-slate-500 tracking-wide">OPERATIONS LIVE</span>
+</div>
+</div>
+<div class="relative w-full h-[600px] bg-slate-50 rounded-2xl border border-slate-300 overflow-hidden shadow-card">
+<div class="absolute inset-0 city-view z-0">
+<div class="absolute top-10 left-20 w-32 h-12 bg-white/40 rounded-full blur-xl"></div>
+<div class="absolute top-24 right-40 w-48 h-16 bg-white/30 rounded-full blur-xl"></div>
+<div class="absolute bottom-0 w-full h-full flex items-end justify-center pointer-events-none">
+<div class="building building-back h-64 w-24 left-[10%] absolute"></div>
+<div class="building building-back h-80 w-32 left-[20%] absolute"></div>
+<div class="building building-back h-56 w-40 right-[15%] absolute"></div>
+<div class="building building-back h-96 w-28 right-[30%] absolute"></div>
+<div class="building building-front h-40 w-full mb-0 absolute bg-gradient-to-t from-slate-300 to-slate-100 opacity-20"></div>
+<div class="absolute inset-0 border-x-[16px] border-slate-800/10 z-10 pointer-events-none" style="background: repeating-linear-gradient(90deg, transparent, transparent 199px, rgba(51, 65, 85, 0.1) 200px);"></div>
+</div>
+</div>
+<div class="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent pointer-events-none z-10"></div>
+<div class="absolute inset-0 flex items-center justify-center p-10 z-20">
+<div class="grid grid-cols-3 gap-x-24 gap-y-20 w-full max-w-6xl pt-20">
+<div class="desk-block flex flex-col items-center group">
+<div class="relative w-48 h-28 bg-exec-dark rounded-xl shadow-desk flex flex-col items-center justify-center border-b-4 border-black">
+<div class="absolute -top-12 size-24 rounded-full glass-frame p-1">
+<img alt="Mozi" class="w-full h-full object-cover rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB9mxnm79Z38OPrlcZ3Cib3MKW5NM2WDPxEngVEY0j0Qpp_Fi_mVtffQ68D2dojL1chOC2GojU7CG0zCjO_oEUjZdEY6oTcTukQ8Kr_Ljuko0ENdhL5306KYaDr487Mw-4J13iAI8bcJpCi0PTe9S48ut7qDQZYv5wZ3VvLn06BBiDy_wtwcrkoicsAT_Istf8ikxm0EvRCqKrcIcgFRdATNrfE0OTYQRx2l7U6w_q8ymcMoARk_LzpPXOjEsVpx9FA6knRGt6nClum"/>
+</div>
+<div class="bg-gray-300 w-28 h-16 rounded-md border border-gray-400 mt-8 relative flex items-center justify-center overflow-hidden transform rotate-1 shadow-sm">
+<div class="w-[90%] h-[80%] bg-slate-800 rounded flex items-center justify-center">
+<div class="text-[6px] text-green-400 font-mono leading-tight">
+                                                &gt; init sequence<br/>&gt; deploy_agent
+                                            </div>
+</div>
+</div>
+</div>
+<div class="mt-6 bg-white/90 backdrop-blur px-5 py-3 rounded-lg border border-slate-200 shadow-sm text-center">
+<p class="text-base font-display font-bold text-slate-800">Mozi</p>
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Tech Lead</p>
+</div>
+</div>
+<div class="desk-block flex flex-col items-center group mt-12">
+<div class="relative w-48 h-28 bg-exec-gray rounded-xl shadow-desk flex flex-col items-center justify-center border-b-4 border-slate-700">
+<div class="absolute -top-12 size-24 rounded-full glass-frame p-1">
+<img alt="Elliot" class="w-full h-full object-cover rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAxuVbTNkSqIY_PVagsedJsS7dcKRb4yo7sPASL8BbTAMtuUVgpfjsryYH4ERlIPWJq-1AM2dWKoqOskWejbOwYQKcpkIFYTyma9NM8W6PB-x5F8kFpYCY9a93C7r-LqW3gZiEE3ZInZbhVKqHoKDeLz6-F5Z1wCyopl826b5zo7tubQlfFxz-unTK5yTylqvH2lTsyTmcKqwc6-QWy_OAU1G1zgFWVgpxoWQqHBCuRJf5sxc9y1uubm7vIh6oJdpJRH3pefOkTkxoc"/>
+</div>
+<div class="bg-white w-24 h-16 rounded shadow-sm mt-8 transform -rotate-2 border border-slate-200 p-2 flex flex-col gap-1.5">
+<div class="h-1 bg-slate-300 w-full rounded"></div>
+<div class="h-1 bg-slate-300 w-2/3 rounded"></div>
+<div class="h-1 bg-slate-300 w-3/4 rounded"></div>
+<div class="h-1 bg-blue-400 w-1/2 rounded mt-auto"></div>
+</div>
+</div>
+<div class="mt-6 bg-white/90 backdrop-blur px-5 py-3 rounded-lg border border-slate-200 shadow-sm text-center">
+<p class="text-base font-display font-bold text-slate-800">Elliot</p>
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Director of Ops</p>
+</div>
+</div>
+<div class="desk-block flex flex-col items-center group">
+<div class="relative w-48 h-28 bg-exec-slate rounded-xl shadow-desk flex flex-col items-center justify-center border-b-4 border-slate-800">
+<div class="absolute -top-12 size-24 rounded-full glass-frame p-1">
+<img alt="Varys" class="w-full h-full object-cover rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDxOM90hnDxCb8cNYxdK07LpbgMPu2yIqaYmGNOMOACYKbrimyOBp2GACHwtmVD8Bl8A8GNRzkfwx-gRmj7TKgdEFyiak6gLBft5XyReDAbbd6TMoG3sT_jzao0Iy5gy1vGBn7CwVfF6RAw1KPKYLVLVsU8LD-Fdp2FGyQiFWI778GBkL3EmcgZrViX5ZkBRRX0gKlpvqAMXGiYO_DGXbumxFnXvb9IXzaxlHSi-mDMBreN5U8gB3FAA388FqGTAPJCR5ANoKCcgo1T"/>
+</div>
+<div class="bg-slate-900 w-20 h-14 rounded border border-slate-600 mt-8 relative shadow-sm rotate-3 flex items-center justify-center">
+<span class="material-symbols-outlined text-blue-400 text-lg" data-icon="monitoring">monitoring</span>
+</div>
+</div>
+<div class="mt-6 bg-white/90 backdrop-blur px-5 py-3 rounded-lg border border-slate-200 shadow-sm text-center">
+<p class="text-base font-display font-bold text-slate-800">Varys</p>
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Info Systems</p>
+</div>
+</div>
+<div class="desk-block flex flex-col items-center group">
+<div class="relative w-48 h-28 bg-exec-light rounded-xl shadow-desk flex flex-col items-center justify-center border-b-4 border-slate-600">
+<div class="absolute -top-12 size-24 rounded-full glass-frame p-1">
+<img alt="Daenerys" class="w-full h-full object-cover rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDr2hP8eD_JtsNH4qBgqY_Dw8EHisS30kVu0iyS7W83ESjuvexpvQPWfxVm4F96ien8xsKw2YHrl87roRQ1ZuN4VvlWS54hg3XNujuXOuPKSn2hSF1v_pNNWkWC6EO-jR2xI83Apm8eUV9XOl14bS_lKqA0ZkGeiW_X7o5HxHpsggr0rnqAhn3A7rM1YMWuGLD8NPpVSFVAMvxz16A1qoTpSXhaKdSFX25QjDhaHOY_dJD4U5j9hrWnJVyhT5nIiwJWOSpH_T8iwd5c"/>
+</div>
+<div class="size-14 rounded-full bg-blue-50 border-2 border-slate-200 mt-8 flex items-center justify-center shadow-inner">
+<span class="material-symbols-outlined text-slate-400" data-icon="public">public</span>
+</div>
+</div>
+<div class="mt-6 bg-white/90 backdrop-blur px-5 py-3 rounded-lg border border-slate-200 shadow-sm text-center">
+<p class="text-base font-display font-bold text-slate-800">Daenerys</p>
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Strategic Planner</p>
+</div>
+</div>
+<div class="desk-block flex flex-col items-center group mt-12">
+<div class="relative w-48 h-28 bg-slate-800 rounded-xl shadow-desk flex flex-col items-center justify-center border-b-4 border-black">
+<div class="absolute -top-12 size-24 rounded-full glass-frame p-1">
+<img alt="Sandor" class="w-full h-full object-cover rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAOiw6vFAuYt4kfCLhUqLbhNFEpNdtm80AvodlzZqF0oR18Nndrjp2pzweWNODKrbqZiISZhrQNYibrpDtf0q3cCvTPOSeLRutGSMDO5hGRUF5hEuSokcoyngSZFRQhfjDmN1LgMBhc-RGqxr8qK777EO2AcWk053YhiraW7Y9lptaHXjd2cdis_IvJ3-enX3C_9jBuAx6uxgryP297kZJvurlVl9U9CD0ygV2AQf1yjt1CaGCAog2m5yJp7_DdrjSlQArle1uej7Ar"/>
+</div>
+<div class="w-10 h-14 bg-white rounded border border-slate-300 mt-8 flex flex-col items-center p-1 shadow-sm rotate-6">
+<div class="size-6 bg-slate-200 rounded-full mb-1"></div>
+<div class="h-1 w-full bg-slate-800 rounded-full"></div>
+</div>
+</div>
+<div class="mt-6 bg-white/90 backdrop-blur px-5 py-3 rounded-lg border border-slate-200 shadow-sm text-center">
+<p class="text-base font-display font-bold text-slate-800">Sandor</p>
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Security Chief</p>
+</div>
+</div>
+<div class="desk-block flex flex-col items-center group">
+<div class="relative w-48 h-28 bg-exec-gray rounded-xl shadow-desk flex flex-col items-center justify-center border-b-4 border-slate-600">
+<div class="absolute -top-12 size-24 rounded-full glass-frame p-1">
+<img alt="Tyrion" class="w-full h-full object-cover rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYdDvoq2MC-s-KnqEm3Oug6_8MxQOMhIRmdT_sM24tqCNHx5-GLOoYD9axo9vCTSkw1iXR0iXiEHbp27ioDD0vHCL0MYeV5sg7s9OpgWa2iOVfceTvsHH0TQIVTWxxvZCeT9nrMKZl6OgkYqPDVcihu42YOMBUzQxeYNCeNHsL1t7mDCi-N33qWZeAozabS03L9Hpa3B8DEvpLEsjR3ZfzSfNOY3qfPdqejFTmkeaGX7_yge_BZ7KVTTbhl-0vh-SN6RFyErnWglvR"/>
+</div>
+<div class="bg-slate-700 w-16 h-16 rounded border border-slate-600 mt-8 relative shadow-sm -rotate-2 flex items-center justify-center">
+<span class="material-symbols-outlined text-yellow-500" data-icon="attach_money">attach_money</span>
+</div>
+</div>
+<div class="mt-6 bg-white/90 backdrop-blur px-5 py-3 rounded-lg border border-slate-200 shadow-sm text-center">
+<p class="text-base font-display font-bold text-slate-800">Tyrion</p>
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">CFO</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="flex flex-col gap-6">
+<div class="flex items-center justify-between pb-2">
+<h2 class="text-slate-700 text-3xl font-display font-bold flex items-center gap-3">
+<div class="p-2 bg-blue-100 rounded-lg text-blue-600">
+<span class="material-symbols-outlined" data-icon="view_kanban">view_kanban</span>
+</div>
+                        Project Operations
+                    </h2>
+<div class="flex gap-4">
+<button class="px-5 py-2 rounded-lg border border-slate-200 bg-white text-sm font-bold text-slate-500 hover:text-exec-accent hover:border-exec-accent transition-colors shadow-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">filter_list</span> Filter
+                        </button>
+<button class="px-5 py-2 rounded-lg bg-exec-dark text-white text-sm font-bold hover:bg-slate-800 transition-colors shadow-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">add</span> New Project
+                        </button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="kanban-col flex flex-col h-full min-h-[500px]">
+<div class="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-100 rounded-t-lg">
+<span class="text-slate-700 font-bold text-sm uppercase tracking-wide flex items-center gap-2">
+<span class="size-2 rounded-full bg-slate-400"></span>
+                                Backlog
+                            </span>
+<span class="bg-white text-slate-500 text-xs px-2 py-1 rounded border border-slate-200 font-bold">3</span>
+</div>
+<div class="p-4 flex flex-col gap-3">
+<div class="executive-card p-4 cursor-pointer group hover:border-exec-accent">
+<div class="flex justify-between items-start mb-2">
+<span class="status-pill bg-blue-50 text-blue-600 border border-blue-100">Research</span>
+<span class="material-symbols-outlined text-slate-300 group-hover:text-exec-accent" data-icon="more_horiz">more_horiz</span>
+</div>
+<h4 class="text-slate-800 font-bold text-base mb-1">Market Analysis Q4</h4>
+<p class="text-slate-500 text-xs mb-4 line-clamp-2">Deep dive into competitor donut consumption rates.</p>
+<div class="flex justify-between items-center pt-2 border-t border-slate-100">
+<div class="flex -space-x-2">
+<img alt="Avatar" class="size-6 rounded-full avatar-ring" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCc4noUxcsHsLfvh2P7tLdqPZoYj-xIoq2AxjDOxJts4ptJlKKkYGO9OR7d9OvHuT0ddmWV9L28n1nDP9urYluaaPBaTTRcMUpekmauSMTsKq3C4TM3YHTgc5h1uHwUHk6V0c3liNUWHEbp924e34cRJ0aBDQQ-O-kdpFA4w-P_sF-7lzlEy4jl3FS7X40WJl7jbcXbdnyMfIvYgECHAJUjXJSAr8fSZFfW8obPWcFqcbBZxKiKGvUXoo1cc7_x0-6iykz4Wp_OQHG0"/>
+</div>
+<div class="flex items-center gap-1 text-slate-400 text-xs">
+<span class="material-symbols-outlined text-sm" data-icon="attach_file">attach_file</span> 2
+                                    </div>
+</div>
+</div>
+<div class="executive-card p-4 cursor-pointer group hover:border-exec-accent">
+<div class="flex justify-between items-start mb-2">
+<span class="status-pill bg-purple-50 text-purple-600 border border-purple-100">IT Ops</span>
+<span class="material-symbols-outlined text-slate-300 group-hover:text-exec-accent" data-icon="more_horiz">more_horiz</span>
+</div>
+<h4 class="text-slate-800 font-bold text-base mb-1">Server Migration</h4>
+<p class="text-slate-500 text-xs mb-4 line-clamp-2">Move the main gaming console to the secure server room.</p>
+<div class="flex justify-between items-center pt-2 border-t border-slate-100">
+<div class="flex -space-x-2">
+<img alt="Avatar" class="size-6 rounded-full avatar-ring" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPgfluMAqGazWnmyJjzO6vl5Q2z77WcMWAKmu-VYfrhv8mZs2G_qOOnv1I4op8isyzY_wGRHJteLRnjjqtrMlWzmBHAWvoj0DzqEoXmYoJPRCdqpiajPa-NqBpohckFiAAxG-jh_N0aGtet8Cyi2JoZba7E-kQWiPHU1VrpS1aWXonCJRELpbhqKGYF25SZmQz8sBvqLudlS3jGhZYKP8xm47OWO53ZArwbUKobOYRbooQdyutFK5yGfMTbURtjCAMaJcKW1OEeWn-"/>
+<img alt="Avatar" class="size-6 rounded-full avatar-ring" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB9mxnm79Z38OPrlcZ3Cib3MKW5NM2WDPxEngVEY0j0Qpp_Fi_mVtffQ68D2dojL1chOC2GojU7CG0zCjO_oEUjZdEY6oTcTukQ8Kr_Ljuko0ENdhL5306KYaDr487Mw-4J13iAI8bcJpCi0PTe9S48ut7qDQZYv5wZ3VvLn06BBiDy_wtwcrkoicsAT_Istf8ikxm0EvRCqKrcIcgFRdATNrfE0OTYQRx2l7U6w_q8ymcMoARk_LzpPXOjEsVpx9FA6knRGt6nClum"/>
+</div>
+<div class="flex items-center gap-1 text-slate-400 text-xs">
+<span class="material-symbols-outlined text-sm" data-icon="schedule">schedule</span> Dec 12
+                                    </div>
+</div>
+</div>
+<div class="executive-card p-4 cursor-pointer group hover:border-exec-accent">
+<div class="flex justify-between items-start mb-2">
+<span class="status-pill bg-orange-50 text-orange-600 border border-orange-100">Logistics</span>
+<span class="material-symbols-outlined text-slate-300 group-hover:text-exec-accent" data-icon="more_horiz">more_horiz</span>
+</div>
+<h4 class="text-slate-800 font-bold text-base mb-1">Supply Restock</h4>
+<p class="text-slate-500 text-xs mb-4 line-clamp-2">Urgent order for more coffee beans and energy drinks.</p>
+<div class="flex justify-between items-center pt-2 border-t border-slate-100">
+<div class="flex -space-x-2">
+<img alt="Avatar" class="size-6 rounded-full avatar-ring" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDryTgZF0Vw38rdi75GGKRKvV1JuuVHT4V28YQGBPI2XgpxDejPIMHKYu6_xaXlVAwGkfGFfF03h_HKZtJqyCcdGGt1m5qmKy3kQ9xRh_Fy9YE1tZ3o9RCF5nsQWWz-JpuLmrqfQU9FSKAEUoCH3vh9GbKXcH3A5b7HxNw8gj-US2s4E0Avgz11XvXQrbATbDQU3poXwm18r-mZBNflP9quBbJKCpyM_QiIzBN9rUky0TXXZk8HR-SiSYbbYRsavYt7Go1o_7BEqShI"/>
+</div>
+<div class="flex items-center gap-1 text-red-400 text-xs font-bold">
+<span class="material-symbols-outlined text-sm" data-icon="flag">flag</span> High
+                                    </div>
+</div>
+</div>
+</div>
+</div>
+<div class="kanban-col flex flex-col h-full min-h-[500px]">
+<div class="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-100 rounded-t-lg">
+<span class="text-slate-700 font-bold text-sm uppercase tracking-wide flex items-center gap-2">
+<span class="size-2 rounded-full bg-exec-accent"></span>
+                                In Progress
+                            </span>
+<span class="bg-white text-slate-500 text-xs px-2 py-1 rounded border border-slate-200 font-bold">2</span>
+</div>
+<div class="p-4 flex flex-col gap-3">
+<div class="executive-card p-4 cursor-pointer group border-l-4 border-l-exec-accent hover:shadow-md">
+<div class="flex justify-between items-start mb-2">
+<span class="status-pill bg-blue-100 text-blue-700">Internal</span>
+<span class="material-symbols-outlined text-slate-300 group-hover:text-exec-accent" data-icon="more_horiz">more_horiz</span>
+</div>
+<h4 class="text-slate-800 font-bold text-base mb-1">Office Fortification</h4>
+<p class="text-slate-500 text-xs mb-3">Reinforcing the pillow fort in the break room.</p>
+<div class="w-full bg-slate-100 rounded-full h-1.5 mb-4">
+<div class="bg-exec-accent h-1.5 rounded-full" style="width: 45%"></div>
+</div>
+<div class="flex justify-between items-center pt-2 border-t border-slate-100">
+<div class="flex -space-x-2">
+<img alt="Avatar" class="size-6 rounded-full avatar-ring" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCrlPWXk99fn6rwrE_VSHpu2rF_yDfAUuJNPTsxBntxL09UB1kIHkFDL7Ili97hhKXx033eIBA6mG62YbUv3-ZKzbmm0mm8_756rtfmrWX9Q-pfJC3W9kXU8KgbiDYZWM488NGiqWEqF89V2VqWMoZLmiIGgL4st0PRgA3rPa3RT23E1lmjKH6X3EWQ2IPXd5c3PdJBRL4cvZwb-EzC__c4W-DOq6UwG08lOwt-groFzea5stsWCO5yEspZufgiLXfDmkpSElLasNpC"/>
+<img alt="Avatar" class="size-6 rounded-full avatar-ring" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCc4noUxcsHsLfvh2P7tLdqPZoYj-xIoq2AxjDOxJts4ptJlKKkYGO9OR7d9OvHuT0ddmWV9L28n1nDP9urYluaaPBaTTRcMUpekmauSMTsKq3C4TM3YHTgc5h1uHwUHk6V0c3liNUWHEbp924e34cRJ0aBDQQ-O-kdpFA4w-P_sF-7lzlEy4jl3FS7X40WJl7jbcXbdnyMfIvYgECHAJUjXJSAr8fSZFfW8obPWcFqcbBZxKiKGvUXoo1cc7_x0-6iykz4Wp_OQHG0"/>
+</div>
+<span class="text-xs font-mono text-slate-400">ID: #4021</span>
+</div>
+</div>
+<div class="executive-card p-4 cursor-pointer group border-l-4 border-l-exec-accent hover:shadow-md">
+<div class="flex justify-between items-start mb-2">
+<span class="status-pill bg-teal-100 text-teal-700">Security</span>
+<span class="material-symbols-outlined text-slate-300 group-hover:text-exec-accent" data-icon="more_horiz">more_horiz</span>
+</div>
+<h4 class="text-slate-800 font-bold text-base mb-1">Handshake Protocol</h4>
+<p class="text-slate-500 text-xs mb-3">Developing a new encrypted handshake for executive entry.</p>
+<div class="w-full bg-slate-100 rounded-full h-1.5 mb-4">
+<div class="bg-teal-500 h-1.5 rounded-full" style="width: 80%"></div>
+</div>
+<div class="flex justify-between items-center pt-2 border-t border-slate-100">
+<div class="flex -space-x-2">
+<img alt="Avatar" class="size-6 rounded-full avatar-ring" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDNGqXPa2whvlAmWAuCVhfRym9YMJzmI8_MNSDcstnU9JWLP4mVcu4jf5vQu2KeLjxSchhFMWxsjoFYzJXxlQ1rKL1jjaUQ3ApvdpuFBJRRa6LniuuqtMgfAuG8iYHGDYYzuEkc6hxuotXC03q5Ht231Sr3bohzeaKkOHh27Gdzdvpjkx6u5cBCz_YmfYGxQUhokVWH14sRUEsuwRY_9f0uxJ5nzTyuDxPrpeQAMTrAhGrR6LPTaFS6Ef0tzJWPBCf25ODzfLjE7NaL"/>
+</div>
+<span class="text-xs font-mono text-slate-400">ID: #4099</span>
+</div>
+</div>
+</div>
+</div>
+<div class="kanban-col flex flex-col h-full min-h-[500px]">
+<div class="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-100 rounded-t-lg">
+<span class="text-slate-700 font-bold text-sm uppercase tracking-wide flex items-center gap-2">
+<span class="size-2 rounded-full bg-green-500"></span>
+                                Completed
+                            </span>
+<span class="bg-white text-slate-500 text-xs px-2 py-1 rounded border border-slate-200 font-bold">3</span>
+</div>
+<div class="p-4 flex flex-col gap-3">
+<div class="executive-card p-4 cursor-pointer group opacity-75 hover:opacity-100 transition-opacity">
+<div class="flex justify-between items-start mb-2">
+<span class="status-pill bg-green-100 text-green-700 flex items-center gap-1">
+<span class="material-symbols-outlined text-[10px]">check</span> Done
+                                    </span>
+<span class="material-symbols-outlined text-green-600" data-icon="check_circle">check_circle</span>
+</div>
+<h4 class="text-slate-800 font-bold text-base mb-1 line-through text-slate-400 decoration-2">Quarterly Review</h4>
+<p class="text-slate-400 text-xs mb-3">Performance evaluation of the cafeteria menu.</p>
+<div class="flex justify-between items-center pt-2 border-t border-slate-100 text-xs text-slate-400">
+<span>Completed today</span>
+</div>
+</div>
+<div class="executive-card p-4 cursor-pointer group opacity-75 hover:opacity-100 transition-opacity">
+<div class="flex justify-between items-start mb-2">
+<span class="status-pill bg-green-100 text-green-700 flex items-center gap-1">
+<span class="material-symbols-outlined text-[10px]">check</span> Done
+                                    </span>
+<span class="material-symbols-outlined text-green-600" data-icon="check_circle">check_circle</span>
+</div>
+<h4 class="text-slate-800 font-bold text-base mb-1 line-through text-slate-400 decoration-2">Asset Audit</h4>
+<p class="text-slate-400 text-xs mb-3">Inventory check of all staplers and pens.</p>
+<div class="flex justify-between items-center pt-2 border-t border-slate-100 text-xs text-slate-400">
+<span>Completed yesterday</span>
+</div>
+</div>
+<div class="executive-card p-4 cursor-pointer group opacity-75 hover:opacity-100 transition-opacity">
+<div class="flex justify-between items-start mb-2">
+<span class="status-pill bg-green-100 text-green-700 flex items-center gap-1">
+<span class="material-symbols-outlined text-[10px]">check</span> Done
+                                    </span>
+<span class="material-symbols-outlined text-green-600" data-icon="check_circle">check_circle</span>
+</div>
+<h4 class="text-slate-800 font-bold text-base mb-1 line-through text-slate-400 decoration-2">Budget Approval</h4>
+<p class="text-slate-400 text-xs mb-3">Approved funds for new espresso machine.</p>
+<div class="flex justify-between items-center pt-2 border-t border-slate-100 text-xs text-slate-400">
+<span>Completed 2 days ago</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+</div>
+
+</body></html>
