@@ -22,7 +22,7 @@ export async function CommandCentre() {
   const ordered = AGENT_ORDER.map((meta) => agentMap.get(meta.id)).filter(Boolean) as Agent[];
 
   return (
-    <section className="flex flex-col gap-6">
+    <section className="flex flex-col gap-2 h-full">
       <div className="flex items-center justify-between">
         <h2 className="text-slate-700 text-xl font-display font-bold flex items-center gap-2">
           <div className="p-1.5 bg-slate-200 rounded-lg text-slate-600">

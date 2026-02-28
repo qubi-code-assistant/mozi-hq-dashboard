@@ -1,6 +1,6 @@
 export function OfficeScene({ children }: { children: React.ReactNode }) {
   return (
-    <div className="relative w-full h-[160px] bg-slate-50 rounded-2xl border border-slate-300 overflow-hidden shadow-card">
+    <div className="relative w-full h-full min-h-[180px] bg-slate-50 rounded-2xl border border-slate-300 overflow-hidden shadow-card">
       {/* Sky + cityscape background */}
       <div className="absolute inset-0 city-view z-0">
         {/* Clouds */}

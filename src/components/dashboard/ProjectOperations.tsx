@@ -25,7 +25,7 @@ export async function ProjectOperations() {
   const done       = rows.filter((t) => t.state === "approved" || t.state === "done").map(enrich);
 
   return (
-    <section className="flex flex-col gap-2 min-h-0">
+    <section className="flex flex-col gap-2 h-full min-h-0">
       <div className="flex items-center justify-between">
         <h2 className="text-slate-700 text-xl font-display font-bold flex items-center gap-2">
           <div className="p-1.5 bg-blue-100 rounded-lg text-blue-600">
@@ -44,7 +44,7 @@ export async function ProjectOperations() {
       </div>
 
       {/* Kanban — horizontal scroll on overflow */}
-      <div className="overflow-x-auto pb-2">
+      <div className="overflow-x-auto overflow-y-auto flex-1 pb-1">
         <div className="grid grid-cols-4 gap-4 min-w-[800px]">
           <KanbanColumn title="Backlog"     tasks={backlog} />
           <KanbanColumn title="In Progress" tasks={inProgress} />
