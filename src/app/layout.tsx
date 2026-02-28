@@ -24,8 +24,8 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="text-slate-600 font-body min-h-screen flex flex-col overflow-x-hidden">
-        <div className="flex flex-col h-full grow relative z-10">
+      <body className="text-slate-600 font-body h-screen flex flex-col overflow-hidden">
+        <div className="flex flex-col h-full overflow-hidden">
           <Navbar />
           {children}
         </div>

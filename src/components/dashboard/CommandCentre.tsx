@@ -23,7 +23,7 @@ export async function CommandCentre() {
 
   return (
     <section className="flex flex-col gap-6">
-      <div className="flex items-center justify-between pb-2">
+      <div className="flex items-center justify-between">
         <h2 className="text-slate-700 text-3xl font-display font-bold flex items-center gap-3">
           <div className="p-2 bg-slate-200 rounded-lg text-slate-600">
             <MaterialIcon name="meeting_room" />
