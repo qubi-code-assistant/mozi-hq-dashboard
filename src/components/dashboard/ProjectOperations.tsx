@@ -25,10 +25,10 @@ export async function ProjectOperations() {
   const done       = rows.filter((t) => t.state === "approved" || t.state === "done").map(enrich);
 
   return (
-    <section className="flex flex-col gap-4 min-h-0">
+    <section className="flex flex-col gap-2 min-h-0">
       <div className="flex items-center justify-between">
-        <h2 className="text-slate-700 text-2xl font-display font-bold flex items-center gap-3">
-          <div className="p-2 bg-blue-100 rounded-lg text-blue-600">
+        <h2 className="text-slate-700 text-xl font-display font-bold flex items-center gap-2">
+          <div className="p-1.5 bg-blue-100 rounded-lg text-blue-600">
             <MaterialIcon name="view_kanban" />
           </div>
           Project Operations

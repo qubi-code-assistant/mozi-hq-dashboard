@@ -57,14 +57,12 @@ export function ActiveTicketHero() {
 
   if (!task) {
     return (
-      <div className="executive-card p-8 text-center">
-        <MaterialIcon name="pending_actions" className="text-5xl text-slate-300 mb-3" />
-        <p className="text-slate-500 font-display font-bold text-lg">
+      <div className="executive-card p-3 text-center flex items-center justify-center gap-3">
+        <MaterialIcon name="pending_actions" className="text-2xl text-slate-300" />
+        <p className="text-slate-500 font-display font-bold text-sm">
           No active tasks
         </p>
-        <p className="text-slate-400 text-sm mt-1">
-          Fire up an agent to get started
-        </p>
+        
       </div>
     );
   }
@@ -75,10 +73,10 @@ export function ActiveTicketHero() {
 
   return (
     <div
-      className="executive-card p-6 border-l-4"
+      className="executive-card p-3 border-l-4"
       style={{ borderLeftColor: accent }}
     >
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
         {/* Left — Task info */}
         <div className="flex flex-col gap-3">
           <div className="flex items-center gap-2 flex-wrap">
@@ -118,7 +116,7 @@ export function ActiveTicketHero() {
             Progress
           </h4>
           {checklist.length > 0 ? (
-            <div className="space-y-2 max-h-48 overflow-y-auto">
+            <div className="space-y-2 max-h-28 overflow-y-auto">
               {checklist.map((section, si) => (
                 <div key={si}>
                   {section.header && (
@@ -155,7 +153,7 @@ export function ActiveTicketHero() {
           <h4 className="text-sm font-bold text-slate-500 uppercase tracking-wide">
             Live Log
           </h4>
-          <div className="bg-slate-900 rounded-lg p-3 font-mono text-xs text-slate-300 h-48 overflow-y-auto">
+          <div className="bg-slate-900 rounded-lg p-3 font-mono text-xs text-slate-300 h-28 overflow-y-auto">
             {task.activity && task.activity.length > 0 ? (
               task.activity.map((a) => (
                 <div key={a.id} className="mb-1">
@@ -179,7 +177,7 @@ export function ActiveTicketHero() {
       </div>
 
       {/* Bottom — Human-in-loop input */}
-      <form onSubmit={handleSubmit} className="mt-4 flex gap-3">
+      <form onSubmit={handleSubmit} className="mt-2 flex gap-2">
         <input
           type="text"
           value={input}

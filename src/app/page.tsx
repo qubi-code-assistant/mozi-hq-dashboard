@@ -15,7 +15,7 @@ export default async function DashboardPage() {
   await ensureTables();
   return (
     <>
-      <main className="flex-1 flex flex-col gap-4 px-6 py-4 max-w-[1600px] mx-auto w-full min-h-0 overflow-y-auto">
+      <main className="flex-1 flex flex-col gap-2 px-4 py-2 max-w-[1600px] mx-auto w-full min-h-0 overflow-y-auto">
         <Suspense fallback={<Skeleton />}>
           <CommandCentre />
         </Suspense>
