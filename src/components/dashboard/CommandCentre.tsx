@@ -1,25 +1,62 @@
-import { neon } from "@neondatabase/serverless";
-import { AGENT_ORDER } from "@/lib/agents";
-import { OfficeScene } from "./OfficeScene";
-import { AgentDesk } from "./AgentDesk";
+"use client";
+import { useEffect, useState } from "react";
+import { AGENT_ORDER, getAgentAccent, getAgentIcon } from "@/lib/agents";
 import { MaterialIcon } from "@/components/shared/MaterialIcon";
-import type { Agent } from "@/lib/types";
+import { AgentAvatar } from "@/components/shared/AgentAvatar";
 
-export async function CommandCentre() {
-  const sql = neon(process.env.DATABASE_URL!);
-  // Agent is "working" if they have an active task
-  const agents = (await sql`
-    SELECT a.*,
-      CASE WHEN t.id IS NOT NULL THEN 'working' ELSE 'idle' END as status
-    FROM hq_agents a
-    LEFT JOIN hq_tasks t ON t.assigned_to = a.id
-      AND t.state IN ('in_progress', 'peer_review')
-    ORDER BY a.name
-  `) as Agent[];
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Agent = Record<string, any>;
 
-  const workingAgents = agents.filter((a) => a.status === "working");
-  const agentMap = new Map(workingAgents.map((a) => [a.id, a]));
-  const ordered = AGENT_ORDER.map((meta) => agentMap.get(meta.id)).filter(Boolean) as Agent[];
+function AgentDesk({ agent }: { agent: Agent }) {
+  const accent = getAgentAccent(agent.id);
+  const icon = getAgentIcon(agent.id);
+  return (
+    <div className="flex flex-col items-center gap-1 desk-block">
+      <div className="relative">
+        <AgentAvatar agentId={agent.id} name={agent.name} size="md" />
+        <span className="absolute -bottom-0.5 -right-0.5 size-2.5 bg-green-400 rounded-full border-2 border-white" />
+      </div>
+      <div className="bg-white rounded-lg px-2 py-1 text-center shadow-soft border border-slate-100 min-w-[70px]">
+        <p className="text-xs font-bold text-slate-700 truncate">{agent.name}</p>
+        <p className="text-[10px] text-slate-400 uppercase tracking-wide truncate">{agent.role}</p>
+      </div>
+      <div className="w-14 h-8 rounded flex items-center justify-center text-white text-sm" style={{ background: accent }}>
+        <MaterialIcon name={icon} className="text-sm" />
+      </div>
+    </div>
+  );
+}
+
+export function CommandCentre() {
+  const [agents, setAgents] = useState<Agent[]>([]);
+
+  useEffect(() => {
+    // Fetch tasks to derive who is actively working (in_progress only)
+    fetch("/api/hq/tasks", { cache: "no-store" })
+      .then(r => r.json())
+      .then(data => {
+        const activeAgentIds = new Set(data.inProgress.map((t: Agent) => t.assigned_to));
+        fetch("/api/hq/agents", { cache: "no-store" })
+          .then(r => r.json())
+          .then((all: Agent[]) => {
+            setAgents(all.filter(a => activeAgentIds.has(a.id)));
+          });
+      })
+      .catch(() => {});
+
+    const interval = setInterval(() => {
+      fetch("/api/hq/tasks", { cache: "no-store" }).then(r => r.json()).then(data => {
+        const activeAgentIds = new Set(data.inProgress.map((t: Agent) => t.assigned_to));
+        fetch("/api/hq/agents", { cache: "no-store" }).then(r => r.json()).then((all: Agent[]) => {
+          setAgents(all.filter(a => activeAgentIds.has(a.id)));
+        });
+      }).catch(() => {});
+    }, 10000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const ordered = AGENT_ORDER.filter(meta => agents.some(a => a.id === meta.id))
+    .map(meta => agents.find(a => a.id === meta.id)!);
 
   return (
     <section className="flex flex-col gap-2 h-full">
@@ -30,30 +67,26 @@ export async function CommandCentre() {
           </div>
           Command Centre
         </h2>
-        <div className="flex items-center gap-3 bg-white px-4 py-2 rounded-full border border-slate-200 shadow-sm">
+        <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-full border border-slate-200 shadow-sm">
           <span className="size-2 bg-green-500 rounded-full animate-pulse" />
-          <span className="text-sm font-bold text-slate-500 tracking-wide">
-            OPERATIONS LIVE
-          </span>
+          <span className="text-xs font-bold text-slate-500 tracking-wide">LIVE</span>
         </div>
       </div>
 
-      <OfficeScene>
+      <div className="flex-1 rounded-2xl border border-slate-200 shadow-sm overflow-hidden" style={{
+        background: "linear-gradient(to bottom, #87CEEB 0%, #E0F6FF 100%)"
+      }}>
         {ordered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-40 gap-3 text-slate-400">
-            <MaterialIcon name="nights_stay" />
-            <p className="font-body text-sm">No agents currently working — office is quiet</p>
+          <div className="h-full flex flex-col items-center justify-center gap-2 text-slate-400">
+            <MaterialIcon name="nights_stay" className="text-2xl" />
+            <p className="text-xs">Office is quiet</p>
           </div>
         ) : (
-          <div className="grid grid-cols-4 gap-x-12 gap-y-10 w-full max-w-6xl pt-12">
-            {ordered.map((agent, i) => {
-              const col = i % 4;
-              const offset = col === 1 || col === 3;
-              return <AgentDesk key={agent.id} agent={agent} offset={offset} />;
-            })}
+          <div className="flex flex-wrap gap-6 p-4 justify-center items-end h-full">
+            {ordered.map(agent => <AgentDesk key={agent.id} agent={agent} />)}
           </div>
         )}
-      </OfficeScene>
+      </div>
     </section>
   );
 }

@@ -1,28 +1,27 @@
-import { neon } from "@neondatabase/serverless";
+"use client";
+import { useEffect, useState } from "react";
 import { KanbanColumn } from "./KanbanColumn";
 import { MaterialIcon } from "@/components/shared/MaterialIcon";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Row = Record<string, any>;
 
-export async function ProjectOperations() {
-  const sql = neon(process.env.DATABASE_URL!);
-  const rows: Row[] = await sql`SELECT * FROM hq_tasks ORDER BY created_at DESC`;
+export function ProjectOperations() {
+  const [data, setData] = useState<{ backlog: Row[]; inProgress: Row[]; review: Row[]; done: Row[] }>({
+    backlog: [], inProgress: [], review: [], done: []
+  });
 
-  const agentIdSet: Record<string, boolean> = {};
-  rows.forEach((t) => { if (t.assigned_to) agentIdSet[t.assigned_to] = true; });
-  const agentIds = Object.keys(agentIdSet);
-  const agents: Row[] = agentIds.length > 0
-    ? await sql`SELECT id, name FROM hq_agents WHERE id = ANY(${agentIds})`
-    : [];
-  const agentMap: Record<string, string> = {};
-  agents.forEach((a) => { agentMap[a.id] = a.name; });
-  const enrich = (t: Row) => ({ ...t, agent_name: agentMap[t.assigned_to] ?? null });
+  useEffect(() => {
+    fetch("/api/hq/tasks", { cache: "no-store" })
+      .then(r => r.json())
+      .then(setData)
+      .catch(() => {});
 
-  const backlog    = rows.filter((t) => t.state === "backlog" || t.state === "todo").map(enrich);
-  const inProgress = rows.filter((t) => t.state === "in_progress").map(enrich);
-  const review     = rows.filter((t) => t.state === "peer_review" || t.state === "review").map(enrich);
-  const done       = rows.filter((t) => t.state === "approved" || t.state === "done").map(enrich);
+    const interval = setInterval(() => {
+      fetch("/api/hq/tasks", { cache: "no-store" }).then(r => r.json()).then(setData).catch(() => {});
+    }, 10000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <section className="flex flex-col gap-2 h-full min-h-0">
@@ -34,7 +33,7 @@ export async function ProjectOperations() {
           Project Operations
         </h2>
         <div className="flex gap-3">
-          <button className="px-4 py-2 rounded-lg border border-slate-200 bg-white text-sm font-bold text-slate-500 hover:text-exec-accent hover:border-exec-accent transition-colors shadow-sm flex items-center gap-2">
+          <button className="px-4 py-2 rounded-lg border border-slate-200 bg-white text-sm font-bold text-slate-500 hover:border-exec-accent transition-colors shadow-sm flex items-center gap-2">
             <MaterialIcon name="filter_list" className="text-sm" /> Filter
           </button>
           <button className="px-4 py-2 rounded-lg bg-exec-dark text-white text-sm font-bold hover:bg-slate-800 transition-colors shadow-sm flex items-center gap-2">
@@ -42,14 +41,12 @@ export async function ProjectOperations() {
           </button>
         </div>
       </div>
-
-      {/* Kanban — horizontal scroll on overflow */}
       <div className="overflow-x-auto overflow-y-auto flex-1 pb-1">
-        <div className="grid grid-cols-4 gap-4 min-w-[800px]">
-          <KanbanColumn title="Backlog"     tasks={backlog} />
-          <KanbanColumn title="In Progress" tasks={inProgress} />
-          <KanbanColumn title="Review"      tasks={review} />
-          <KanbanColumn title="Done"        tasks={done} />
+        <div className="grid grid-cols-4 gap-4 min-w-[800px] h-full">
+          <KanbanColumn title="Backlog"     tasks={data.backlog} />
+          <KanbanColumn title="In Progress" tasks={data.inProgress} />
+          <KanbanColumn title="Review"      tasks={data.review} />
+          <KanbanColumn title="Done"        tasks={data.done} />
         </div>
       </div>
     </section>
