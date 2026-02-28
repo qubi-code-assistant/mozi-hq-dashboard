@@ -1,10 +1,12 @@
 "use client";
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Task = Record<string, any>;
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { AgentAvatar } from "@/components/shared/AgentAvatar";
 import { PriorityBadge } from "@/components/shared/PriorityBadge";
 import { MaterialIcon } from "@/components/shared/MaterialIcon";
-import type { Task, Priority } from "@/lib/types";
+
 
 export function TaskCard({ task }: { task: Task }) {
   const router = useRouter();
@@ -93,7 +95,7 @@ export function TaskCard({ task }: { task: Task }) {
         ) : (
           <span className="text-xs text-slate-400">Unassigned</span>
         )}
-        <PriorityBadge priority={task.priority as Priority} />
+        <PriorityBadge priority={task.priority} />
       </div>
     </div>
   );

@@ -81,3 +81,8 @@ body {
 .avatar-ring {
   box-shadow: 0 0 0 2px #fff, 0 0 0 4px #e2e8f0;
 }
+
+html, body {
+  height: 100%;
+  overflow-x: hidden;
+}

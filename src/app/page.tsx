@@ -7,33 +7,25 @@ import { ensureTables } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
-function LoadingSkeleton() {
-  return (
-    <div className="executive-card p-8 animate-pulse">
-      <div className="h-6 bg-slate-200 rounded w-1/3 mb-4" />
-      <div className="h-4 bg-slate-200 rounded w-2/3" />
-    </div>
-  );
+function Skeleton() {
+  return <div className="executive-card p-6 animate-pulse h-24" />;
 }
 
 export default async function DashboardPage() {
   await ensureTables();
   return (
     <>
-      <main className="flex-1 flex flex-col p-8 max-w-[1600px] mx-auto w-full gap-8">
-        <Suspense fallback={<LoadingSkeleton />}>
+      <main className="flex-1 flex flex-col gap-4 px-6 py-4 max-w-[1600px] mx-auto w-full overflow-hidden">
+        <Suspense fallback={<Skeleton />}>
           <CommandCentre />
         </Suspense>
-
-        <Suspense fallback={<LoadingSkeleton />}>
+        <Suspense fallback={<Skeleton />}>
           <ActiveTicketHero />
         </Suspense>
-
-        <Suspense fallback={<LoadingSkeleton />}>
+        <Suspense fallback={<Skeleton />}>
           <ProjectOperations />
         </Suspense>
       </main>
-
       <Suspense fallback={null}>
         <TicketDetailModal />
       </Suspense>

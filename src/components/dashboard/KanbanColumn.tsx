@@ -1,5 +1,6 @@
 import { TaskCard } from "./TaskCard";
-import type { Task } from "@/lib/types";
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Task = Record<string, any>;
 
 const COL_DOTS: Record<string, string> = {
   Backlog: "bg-slate-400",
