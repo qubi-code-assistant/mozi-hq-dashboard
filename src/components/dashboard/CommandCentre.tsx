@@ -7,9 +7,11 @@ import type { Agent } from "@/lib/types";
 
 export async function CommandCentre() {
   const agents = await getAllAgents();
-  const agentMap = new Map(agents.map((a) => [a.id, a]));
 
-  // Sort agents according to defined order
+  // Only show agents that are actively working
+  const workingAgents = agents.filter((a) => a.status === "working");
+  const agentMap = new Map(workingAgents.map((a) => [a.id, a]));
+
   const ordered = AGENT_ORDER.map((meta) => agentMap.get(meta.id)).filter(
     Boolean
   ) as Agent[];
@@ -32,16 +34,22 @@ export async function CommandCentre() {
       </div>
 
       <OfficeScene>
-        <div className="grid grid-cols-4 gap-x-12 gap-y-10 w-full max-w-6xl pt-12">
-          {ordered.map((agent, i) => {
-            // Columns 1 and 3 (0-indexed) get offset for visual rhythm
-            const col = i % 4;
-            const offset = col === 1 || col === 3;
-            return (
-              <AgentDesk key={agent.id} agent={agent} offset={offset} />
-            );
-          })}
-        </div>
+        {ordered.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-40 gap-3 text-slate-400">
+            <MaterialIcon name="nights_stay" />
+            <p className="font-body text-sm">No agents currently working — office is quiet</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-4 gap-x-12 gap-y-10 w-full max-w-6xl pt-12">
+            {ordered.map((agent, i) => {
+              const col = i % 4;
+              const offset = col === 1 || col === 3;
+              return (
+                <AgentDesk key={agent.id} agent={agent} offset={offset} />
+              );
+            })}
+          </div>
+        )}
       </OfficeScene>
     </section>
   );
